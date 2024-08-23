@@ -1,0 +1,13 @@
+.task-employee-info{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  
+  .task-employee-info-title{
+      color:  var(--text-color);
+      text-align: center;
+    }
+    
+  

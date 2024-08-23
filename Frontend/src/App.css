@@ -1,0 +1,16 @@
+
+:root {
+  --background-color:  #f2f5f7;
+}
+
+
+:root {
+--text-color: rgb(68, 74, 100);
+}
+
+
+body {
+background-color: var(--background-color);
+color: var(--text-light);
+font-family: 'Roboto', sans-serif;
+}
