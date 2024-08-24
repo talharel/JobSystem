@@ -16,7 +16,6 @@ export default function JobTable() {
     const fetchJobs = async () => {
       try {
         const data = await jobService.getTasks();
-        console.log(data);
         setJobs(data);
       } catch (error) {
         console.error('Failed to fetch jobs:', error);

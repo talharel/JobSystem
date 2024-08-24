@@ -44,7 +44,7 @@ class ComeetFinder(Finder):
         response = requests.get(url, headers=self.headers)
         return response.text
 
-    def get_jobs(self) -> List[JobDetails]:
+    def get_jobs_from_platform(self) -> List[JobDetails]:
         query = config_app.get('query')
         jobs = []
 

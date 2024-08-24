@@ -24,5 +24,5 @@ class Finder(ABC):
             print(f'Exception {e}')
 
     @abstractmethod
-    def get_jobs(self) -> List[JobDetails]:
+    def get_jobs_from_platform(self) -> List[JobDetails]:
         pass
