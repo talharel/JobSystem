@@ -2,7 +2,7 @@ import { Grid } from '@mui/material';
 import './Dashboard.css';
 import Sidebar from '../Sidebar/Sidebar';
 import JobInfo from '../JobInfo/JobInfo/JobInfo'
-import JobTable from '../JobTable/JobTable'
+import FavoriteTable from '../FavoriteTable/FavoriteTable';
 
 const Dashboard = () => {
   return (
@@ -13,7 +13,7 @@ const Dashboard = () => {
       <Grid item xs={10}>
         <div className='dashboard-content'>
           <JobInfo />
-          <JobTable />
+          <FavoriteTable />
         </div>
       </Grid>
     </Grid>

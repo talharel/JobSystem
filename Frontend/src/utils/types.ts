@@ -5,4 +5,12 @@ export type TypeJob = {
     status: string
     platform_name: string
   };
+
+
+export type TypeCompany = {
+  id: number;
+  company_name: string,
+  url: string,
+};
+  
   

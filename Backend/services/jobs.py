@@ -1,5 +1,6 @@
 from sqlalchemy.future import select
-from sqlalchemy import func
+from fastapi import HTTPException
+from sqlalchemy import func, update
 from models.jobs import Job
 from finders.comeet_finder import ComeetFinder
 from finders.indeed_finder import IndeedFinder
@@ -63,19 +64,45 @@ class JobService:
             print(e)
 
     async def get_jobs(self):
-        result = await self.db.execute(select(Job))
-        return result.scalars().all()
+        try:
+            result = await self.db.execute(select(Job))
+            return result.scalars().all()
+
+        except Exception as e:
+            print('Error in jobs service')
+            print(e)
+            raise HTTPException(status_code=500, detail='Backend Error')
 
     async def get_details(self):
-        possible_statuses = ['viewed', 'not_viewed', 'star']
-        result = await self.db.execute(select(Job.status, func.count(Job.id)).group_by(Job.status))
-        status_counts = {row[0]: row[1] for row in result}
+        try:
+            possible_statuses = ['viewed', 'not_viewed', 'star']
+            result = await self.db.execute(select(Job.status, func.count(Job.id)).group_by(Job.status))
+            status_counts = {row[0]: row[1] for row in result}
 
-        for status in possible_statuses:
-            if status not in status_counts:
-                status_counts[status] = 0
+            for status in possible_statuses:
+                if status not in status_counts:
+                    status_counts[status] = 0
 
-        return status_counts
+            return status_counts
+        except Exception as e:
+            print('Error in jobs service')
+            print(e)
+            raise HTTPException(status_code=500, detail='Backend Error')
+
+    async def update_status(self, job_id: int, status: str):
+        try:
+            result = await self.db.execute(select(Job).filter(Job.id == job_id))
+            job = result.scalars().first()
+            if job is None:
+                raise HTTPException(status_code=404, detail='Job is not found.')
+            job.status = status
+            await self.db.commit()
+            await self.db.refresh(job)
+            return job
+        except Exception as e:
+            print('Error in jobs service')
+            print(e)
+            raise HTTPException(status_code=500, detail='Backend Error')
 
 
 async def main():

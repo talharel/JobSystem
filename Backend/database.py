@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy import MetaData
 from collections.abc import AsyncGenerator
-from typing import Any
+
 
 DATABASE_URL = "postgresql+asyncpg://postgres:postgresql@127.0.0.1:5433/JobQuestProDB"
 
