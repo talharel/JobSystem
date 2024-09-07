@@ -11,7 +11,7 @@ import jobService from '../../services/jobService';
 import Typography from '@mui/material/Typography';
 import { TypeJob } from '../../utils/types';
 import LinearProgressWithLabel from '@mui/material/LinearProgress';
-import { CircularProgress } from '@mui/material';
+import { websocketBackendUrl } from '../../utils/constants';
 
 interface JobTableProps {
   toggle: boolean;
@@ -46,8 +46,8 @@ export default function JobTable({ toggle, setToggle }: JobTableProps) {
     try {
       setIsSearching(true);
       const taskID = await jobService.searchJobs();
-
-      const ws = new WebSocket(`ws://localhost:8000/jobs/ws/${taskID}`);
+      
+      const ws = new WebSocket(`${websocketBackendUrl}/jobs/ws/${taskID}`);
 
       ws.onopen = () => {
         console.log('WebSocket connection opened');
