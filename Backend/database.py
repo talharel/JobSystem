@@ -1,9 +1,11 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy import MetaData
 from collections.abc import AsyncGenerator
+from dotenv import load_dotenv
+import os
 
-
-DATABASE_URL = "postgresql+asyncpg://postgres:postgresql@127.0.0.1:5433/JobQuestProDB"
+load_dotenv()
+DATABASE_URL = f"postgresql+asyncpg://{os.getenv('DATABASE_USERNAME')}:{os.getenv('DATABASE_PASSWORD')}@{os.getenv('DATABASE_URL')}"
 
 metadata = MetaData()
 

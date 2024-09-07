@@ -4,12 +4,16 @@ from database import engine
 from routers.jobs import router as jobs_router
 from routers.companies import router as companies_router
 from models.base_model import Base
+from dotenv import load_dotenv
+import os
 
 app = FastAPI()
+load_dotenv()
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*', 'http://localhost:5173'],
+    allow_origins=[os.getenv('FRONTEND_URL')],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
