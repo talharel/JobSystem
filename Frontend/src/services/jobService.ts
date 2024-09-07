@@ -21,7 +21,8 @@ const jobService = {
 
   async searchJobs() {
     try {
-      await apiClient.get('/jobs/update', {});
+      const response = await apiClient.get('/jobs/update', {});
+      return response.data.task_id;
     } catch (error) {
       throw error;
     }
@@ -40,6 +41,8 @@ const jobService = {
       throw error;
     }
   },
+
+
 
 };
 

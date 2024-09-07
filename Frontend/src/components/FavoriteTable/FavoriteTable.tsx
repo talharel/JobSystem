@@ -38,7 +38,7 @@ export default function FavoriteTable() {
       const companiesids = await companyService.searchWordInCompany(
         wordToSearch
       );
-
+      
       const foundIds = companiesids.map((id: any) => id);
 
       setSearchResults(foundIds);

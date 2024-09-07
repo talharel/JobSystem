@@ -10,6 +10,7 @@ from database import get_db
 from schemas.finders import Finder
 import asyncio
 import config_file
+from celery_tasks.common import set_task_progress
 
 
 class JobService:
@@ -24,15 +25,20 @@ class JobService:
 
         self.finders.append(finder)
 
-    def get_jobs_from_finders(self) -> List[JobDetails]:
+
+    def get_jobs_from_finders(self, task_details) -> List[JobDetails]:
         jobs = []
+        counter = 20
         for finder in self.finders:
             try:
+                counter += 20
+                set_task_progress(task_details, counter)
                 found_jobs = finder.get_jobs_from_platform()
                 jobs.extend(found_jobs)
             except Exception as e:
                 print(f"Failed to fetch jobs from {finder.finder_name}: {str(e)}")
         return jobs
+
 
     async def update_jobs_in_db(self, jobs: list):
         try:
@@ -63,6 +69,7 @@ class JobService:
             print("Error while committing new jobs")
             print(e)
 
+
     async def get_jobs(self):
         try:
             result = await self.db.execute(select(Job))
@@ -72,6 +79,7 @@ class JobService:
             print('Error in jobs service')
             print(e)
             raise HTTPException(status_code=500, detail='Backend Error')
+
 
     async def get_details(self):
         try:
@@ -89,6 +97,7 @@ class JobService:
             print(e)
             raise HTTPException(status_code=500, detail='Backend Error')
 
+
     async def update_status(self, job_id: int, status: str):
         try:
             result = await self.db.execute(select(Job).filter(Job.id == job_id))
@@ -105,17 +114,17 @@ class JobService:
             raise HTTPException(status_code=500, detail='Backend Error')
 
 
-async def main():
-    comeet_finder = ComeetFinder('Comeet Finder', config_file.config_app.get('comeet_url'), platform_name='comeet')
-    indeed_finder = IndeedFinder('Indeed Finder', config_file.config_app.get('indeed_url'), platform_name='indeed')
-
-    async for db in get_db():
-        job_service = JobService(db)
-        job_service.add_finder(comeet_finder)
-        job_service.add_finder(indeed_finder)
-        jobs = job_service.get_jobs_from_finders()
-        await job_service.update_jobs_in_db(jobs)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+# async def main():
+#     comeet_finder = ComeetFinder('Comeet Finder', config_file.config_app.get('comeet_url'), platform_name='comeet')
+#     indeed_finder = IndeedFinder('Indeed Finder', config_file.config_app.get('indeed_url'), platform_name='indeed')
+#
+#     async for db in get_db():
+#         job_service = JobService(db)
+#         job_service.add_finder(comeet_finder)
+#         job_service.add_finder(indeed_finder)
+#         jobs = job_service.get_jobs_from_finders()
+#         await job_service.update_jobs_in_db(jobs)
+#
+#
+# if __name__ == "__main__":
+#     asyncio.run(main())

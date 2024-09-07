@@ -4,6 +4,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 from celery_tasks.jobs import celery_task_update_jobs
 from services.jobs import JobService
+from fastapi import WebSocket, WebSocketDisconnect
+from websocket_worker import manager
+from celery.result import AsyncResult
+from celery_worker import celery_app
+import asyncio
+
 
 router = APIRouter(
     prefix='/jobs',
@@ -32,12 +38,31 @@ async def get_details(job_service: JobService = Depends(get_job_service)):
 
 @router.get('/update')
 async def update_jobs():
-    jobs_task = celery_task_update_jobs.delay()
-    return {'status': 'Task Sent'}
+    task = celery_task_update_jobs.delay()
+    return {'status': 'Task Sent', 'task_id': task.id}
 
 
 @router.patch("/status")
 async def update_status(request: Job_StatusRequest, job_service: JobService = Depends(get_job_service)):
-    job = await job_service.update_status(request.job_id,request.status)
-    return {'job':job.id,'status':job.status}
+    job = await job_service.update_status(request.job_id, request.status)
+    return {'job': job.id, 'status': job.status}
 
+
+@router.websocket("/ws/{task_id}")
+async def websocket_endpoint(websocket: WebSocket, task_id: str):
+    await manager.connect(websocket)
+    try:
+        while True:
+            result = AsyncResult(task_id, app=celery_app)
+            if result.state == 'PROGRESS':
+                progress = result.info.get('progress', 0)
+                await websocket.send_json({'progress': progress})
+            elif result.state == 'SUCCESS':
+                await websocket.send_json({'progress': 100})
+                break
+            else:
+                await websocket.send_json({'progress': result.state})
+
+            await asyncio.sleep(2)
+    except WebSocketDisconnect:
+        await manager.disconnect(websocket)

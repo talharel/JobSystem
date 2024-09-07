@@ -10,6 +10,8 @@ import Paper from '@mui/material/Paper';
 import jobService from '../../services/jobService';
 import Typography from '@mui/material/Typography';
 import { TypeJob } from '../../utils/types';
+import LinearProgressWithLabel from '@mui/material/LinearProgress';
+import { CircularProgress } from '@mui/material';
 
 interface JobTableProps {
   toggle: boolean;
@@ -18,6 +20,8 @@ interface JobTableProps {
 
 export default function JobTable({ toggle, setToggle }: JobTableProps) {
   const [jobs, setJobs] = useState<TypeJob[]>([]);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
     const getJobs = async () => {
@@ -40,9 +44,36 @@ export default function JobTable({ toggle, setToggle }: JobTableProps) {
 
   async function handleSearchJobs() {
     try {
-      await jobService.searchJobs();
+      setIsSearching(true);
+      const taskID = await jobService.searchJobs();
+
+      const ws = new WebSocket(`ws://localhost:8000/jobs/ws/${taskID}`);
+
+      ws.onopen = () => {
+        console.log('WebSocket connection opened');
+      };
+
+      ws.onmessage = (event) => {
+        const messageData = JSON.parse(event.data);
+        const progressNumber = parseInt(messageData.progress);
+        setProgress(progressNumber);
+        if (progressNumber === 100) {  
+          setToggle(!toggle);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      ws.onclose = () => {
+        setIsSearching(false);
+        console.log('WebSocket connection closed');
+      };
     } catch (error) {
+      setIsSearching(false);
       console.error('Failed to fetch job details:', error);
+    } finally {
     }
   }
 
@@ -55,19 +86,36 @@ export default function JobTable({ toggle, setToggle }: JobTableProps) {
         <Table stickyHeader aria-label='jobs table'>
           <TableHead>
             <TableRow>
-              <TableCell style={{fontSize:18}} className='job-cell' align='left'>
+              <TableCell
+                style={{ fontSize: 18 }}
+                className='job-cell'
+                align='left'
+              >
                 Company
               </TableCell>
-              <TableCell style={{fontSize:18}} className='job-cell' align='left'>
+              <TableCell
+                style={{ fontSize: 18 }}
+                className='job-cell'
+                align='left'
+              >
                 Url
               </TableCell>
               <TableCell align='right'>
-                <button
-                  className='platform-modalButton'
-                  onClick={handleSearchJobs}
-                >
-                  Find Jobs
-                </button>
+                {isSearching ? (
+                  <LinearProgressWithLabel
+                    value={progress}
+                    style={{ width: 400 }}
+                    color='success'
+                    variant='determinate'
+                  />
+                ) : (
+                  <button
+                    className='platform-modalButton'
+                    onClick={handleSearchJobs}
+                  >
+                    Find Jobs
+                  </button>
+                )}
               </TableCell>
             </TableRow>
           </TableHead>
