@@ -34,8 +34,8 @@ jobs:
           DATABASE_PASSWORD: postgres
           CELERY_BROKER: amqp://guest:guest@rabbitmq:5672/
         run: |
-          ./docker-compose build
+          docker compose build --no-cache
 
       - name: Run Docker Compose
         run: |
-          ./docker-compose up
+          docker compose up -d
