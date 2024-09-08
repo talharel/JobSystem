@@ -26,22 +26,34 @@ jobs:
       - name: Set up Docker Compose
         uses: docker/setup-buildx-action@v1
 
+
+      - name: Set up env files
+        run: |
+          mkdir -p Frontend
+          echo "VITE_BACKEND_URL=http://localhost:8000" > Frontend/.env
+          echo "VITE_WEBSOCKET_BACKEND_URL=ws://localhost:8000/ws" >> Frontend/.env
+          echo "FRONTEND_URL=http://localhost:5173" > Backend/.env
+          echo "DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/postgres" >> Backend/.env
+          echo "DATABASE_USERNAME=postgres" >> Backend/.env
+          echo "DATABASE_PASSWORD=postgres" >> Backend/.env
+          echo "CELERY_BROKER=amqp://guest:guest@rabbitmq:5672/" >> Backend/.env
+
       - name: Build Docker images
-        env:
-          FRONTEND_URL: http://localhost:5173
-          DATABASE_URL: db/postgres
-          DATABASE_USERNAME: postgres
-          DATABASE_PASSWORD: postgres
-          CELERY_BROKER: amqp://guest:guest@rabbitmq:5672/
+        # env:
+        #   FRONTEND_URL: http://localhost:5173
+        #   DATABASE_URL: db/postgres
+        #   DATABASE_USERNAME: postgres
+        #   DATABASE_PASSWORD: postgres
+        #   CELERY_BROKER: amqp://guest:guest@rabbitmq:5672/
         run: |
           docker compose build --no-cache
 
       - name: Run Docker Compose
-        env:
-          FRONTEND_URL: http://localhost:5173
-          DATABASE_URL: db/postgres
-          DATABASE_USERNAME: postgres
-          DATABASE_PASSWORD: postgres
-          CELERY_BROKER: amqp://guest:guest@rabbitmq:5672/
+        # env:
+        #   FRONTEND_URL: http://localhost:5173
+        #   DATABASE_URL: db/postgres
+        #   DATABASE_USERNAME: postgres
+        #   DATABASE_PASSWORD: postgres
+        #   CELERY_BROKER: amqp://guest:guest@rabbitmq:5672/
         run: |
           docker compose up -d
