@@ -37,5 +37,11 @@ jobs:
           docker compose build --no-cache
 
       - name: Run Docker Compose
+        env:
+          FRONTEND_URL: http://localhost:5173
+          DATABASE_URL: db/postgres
+          DATABASE_USERNAME: postgres
+          DATABASE_PASSWORD: postgres
+          CELERY_BROKER: amqp://guest:guest@rabbitmq:5672/
         run: |
           docker compose up -d
