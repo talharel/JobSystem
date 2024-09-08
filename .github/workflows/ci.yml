@@ -25,6 +25,12 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
 
       - name: Build Docker images
+        env:
+        FRONTEND_URL: http://localhost:5173
+        DATABASE_URL: db/postgres
+        DATABASE_USERNAME: postgres
+        DATABASE_PASSWORD: postgres
+        CELERY_BROKER: amqp://guest:guest@rabbitmq:5672/
         run: |
           docker-compose build
 
