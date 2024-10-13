@@ -7,7 +7,7 @@ from finders.indeed_finder import IndeedFinder
 from typing import List
 from schemas.jobs import JobDetails
 from database import get_db
-from schemas.finders import Finder
+from finders.finder import Finder
 import asyncio
 import config_file
 from celery_tasks.common import set_task_progress
