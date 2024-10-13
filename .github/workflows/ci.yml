@@ -12,6 +12,7 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+
     services:
       docker:
         image: docker:19.03.12
@@ -21,8 +22,10 @@ jobs:
       - name: Checkout to the repo
         uses: actions/checkout@v2
 
+
       - name: Set up Docker Compose
         uses: docker/setup-buildx-action@v1
+
 
       - name: Set up env files
         run: |
@@ -32,20 +35,20 @@ jobs:
           echo "FRONTEND_URL=${FRONTEND_URL}" > Backend/JobService/.env
           echo "DATABASE_URL=${DATABASE_URL}" >> Backend/JobService/.env
           echo "DATABASE_USERNAME=${DATABASE_USERNAME}" >> Backend/JobService/.env
-          echo "DATABASE_PASSWORD=${DATABASE_PASSWORD}" >> Backend/JobSerivce/.env
+          echo "DATABASE_PASSWORD=${DATABASE_PASSWORD}" >> Backend/JobService/.env
           echo "CELERY_BROKER=${CELERY_BROKER}" >> Backend/JobService/.env
 
       - name: Build Docker images
         run: |
-          docker compose -f Backend/JobService/docker-compose.yml build --no-cache
+          docker compose build --no-cache
 
       - name: Run Docker Compose
         run: |
-          docker compose -f Backend/JobService/docker-compose.yml up -d
+          docker compose up -d
 
       - name: Wait for services to start
         run: sleep 20
 
       - name: Stop and remove containers
         run: |
-          docker compose -f Backend/JobService/docker-compose.yml down
+          docker compose down
