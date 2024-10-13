@@ -1,5 +1,5 @@
 from typing import List
-from schemas.finders import Finder
+from finders.finder import Finder
 from schemas.jobs import JobDetails
 from bs4 import BeautifulSoup
 

@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from typing import List
 from config_file import config_app
-from schemas.finders import Finder
+from finders.finder import Finder
 from schemas.jobs import JobDetails
 import requests
 

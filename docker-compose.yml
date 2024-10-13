@@ -3,11 +3,11 @@ version: '3.0'
 services:
 
   backend:
-    build: ./Backend
+    build: ./Backend/JobService
     container_name: jobquest_backendcontainer
     image: jobquest_backendimage
     env_file:
-      - ./Backend/.env
+      - ./Backend/JobService/.env
     ports:
       - 8000:8000
 
@@ -25,10 +25,10 @@ services:
 
 
   celeryworker:
-    build: ./Backend
+    build: ./Backend/JobService 
     container_name: jobquest_celeryworker
     env_file:
-      - ./Backend/.env
+      - ./Backend/JobService/.env
     command: celery -A celery_worker worker --concurrency=2 --loglevel=debug --without-mingle --without-gossip --without-heartbeat -P eventlet
     depends_on:
       - rabbitmq
@@ -48,7 +48,7 @@ services:
     container_name: jobquest_db
     image: postgres:14
     env_file:
-      - ./Backend/.env
+      - ./Backend/JobService/.env
     ports:
       - 5432:5432
     volumes:
