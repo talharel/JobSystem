@@ -26,7 +26,7 @@ jobs:
 
       - name: Set up env files
         run: |
-          mkdir -p Frontend Backend
+          mkdir -p Frontend Backend/JobService
           echo "VITE_BACKEND_URL=${VITE_BACKEND_URL}" > Frontend/.env
           echo "VITE_WEBSOCKET_BACKEND_URL=${VITE_WEBSOCKET_BACKEND_URL}" >> Frontend/.env
           echo "FRONTEND_URL=${FRONTEND_URL}" > Backend/JobService/.env
